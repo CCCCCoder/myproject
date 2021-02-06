@@ -12,6 +12,8 @@ typedef short			S16;
 typedef int 			S32;
 typedef long long		S64;
 
+#define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
+
 //通过结构体成员指针获取结构体指针位置
 #define container_of(ptr, type, member) ({			\
 	const typeof( ((type *)0)->member ) *__mptr = (ptr);	\
@@ -27,7 +29,7 @@ enum MyBool{
 	MY_TRUE = (0 == 0),
 }MyBool_t;
 
-typedef MyBool;
+#define BOOL MyBool_t;
 
 #define MY_BUG()                                                                \
             do {                                                                \

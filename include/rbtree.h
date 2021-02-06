@@ -97,6 +97,7 @@ static inline struct page * rb_insert_page_cache(struct inode * inode,
 #include <stdio.h>
 //#include <linux/kernel.h>
 //#include <linux/stddef.h>
+#include "my_types.h"
 
 struct rb_node
 {
@@ -130,12 +131,12 @@ static inline void rb_set_color(struct rb_node *rb, int color)
     rb->rb_parent_color = (rb->rb_parent_color & ~1) | color;
 }
 
-#define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
+/*#define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 
 #define container_of(ptr, type, member) ({          \
     const typeof( ((type *)0)->member ) *__mptr = (ptr);    \
     (type *)( (char *)__mptr - offsetof(type,member) );})
-
+*/
 #define RB_ROOT    (struct rb_root) { NULL, }
 #define    rb_entry(ptr, type, member) container_of(ptr, type, member)
 
