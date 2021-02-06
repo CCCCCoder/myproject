@@ -8,7 +8,8 @@
 typedef struct MemHeader{
 	U32 magic;
 	U32 size;
-	U32  isFree;
+	U32 isFree;
+	U32 pad;
 	U8  body[0];
 }MemHeader_t;
 #endif

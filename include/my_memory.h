@@ -3,6 +3,6 @@
 
 #include "my_types.h"
 
-void *my_alloc(U64 size);
-void my_free(void *pAddr);
+U64 *my_alloc(U64 size);
+void my_free(U64 *pAddr);
 #endif

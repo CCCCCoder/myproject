@@ -17,5 +17,6 @@ typedef enum SchedStatus{
 }SchedStatus_t;
 
 S32 schedInit(void);
+schedRes_t *schedResGet(void);
 
 #endif

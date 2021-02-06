@@ -5,6 +5,7 @@
 #include <pthread.h>
 #include "my_log.h"
 #include <string.h>
+#include "my_memory.h"
 
 S32 taskSubmitToFifo(task_t *pTask)
 {
@@ -23,7 +24,7 @@ S32 taskSubmitToFifo(task_t *pTask)
 
 task_t *taskCreat(void *pPrivData, TaskOps_t *pOps)
 {
-    task_t *pTask = NULL;
+    task_t *pTask = 0;
 
     pTask = (task_t *)my_alloc(sizeof(*pTask));
     if (NULL == pTask) {
@@ -42,7 +43,7 @@ end:
 void taskDestroy(task_t *pTask)
 {
     if (NULL != pTask) {
-        my_free(pTask);
+        my_free((U64 *)pTask);
     }
     
     return;

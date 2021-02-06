@@ -1,13 +1,15 @@
 #include "stdio.h"
 #include "memory.h"
 #include "my_types.h"
+#include "stdlib.h"
 
-void *my_alloc(U64 size)
+U64 *my_alloc(U64 size)
 {
 	MemHeader_t *pHeader  = NULL;
-	U64	     allocLen = 0;
+	U64	         allocLen = 0;
 	U64          len      = 0;
-
+    void        *pAddr    = NULL;
+    
     MY_BUG_ON(size == 0);
     
 	allocLen = size + sizeof(MemHeader_t) + sizeof(U32);
@@ -21,18 +23,20 @@ void *my_alloc(U64 size)
 	pHeader->isFree = 0;
 	len = size + sizeof(MemHeader_t);
 	*(U32 *)((S8 *)pHeader + len) = MEM_HEADER_MAGIC_TAIL;
+
+	pAddr =  (U64 *)pHeader->body;
 end:
-	return (void *)pHeader->body;
+    return pAddr;
 }
 
-void my_free(void *pAddr)
+void my_free(U64 *pAddr)
 {
 	MemHeader_t *pHeader = NULL;
 	
 	if (NULL == pAddr) {
 		goto end;
 	}
-	pHeader = (S8 *)pAddr - sizeof(MemHeader_t);
+	pHeader = (MemHeader_t *)((S8 *)pAddr - sizeof(MemHeader_t));
 	
 	pHeader->isFree = 1;
 	free(pHeader);

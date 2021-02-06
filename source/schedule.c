@@ -5,6 +5,8 @@
 #include "mylist.h"
 #include "memory.h"
 #include "my_log.h"
+#include "test.h"
+#include <unistd.h>
 
 schedRes_t gschedRes;
 
@@ -81,6 +83,7 @@ static void *thdSchedule(void *arg)
             pthread_mutex_unlock(pLock);
         } else {
             MY_LOG("schedule sleep 1\n");
+            test();
             sleep(1);
         }
     }
