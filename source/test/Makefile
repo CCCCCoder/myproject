@@ -3,6 +3,7 @@
 ##########################################
 CUR_DIR = $(shell pwd)
 TOP_DIR = ../../
+include $(TOP_DIR)/Makefile.define
 INCS += -I$(TOP_DIR)include
 INCS += -I../include
 
@@ -11,7 +12,7 @@ OBJS = $(patsubst %.c,%.o,$(SOURCES))
 all:$(OBJS)
 	@echo $(INCS)
 %.o:%.c
-	cc -c -g $(INCS) $^
+	$(CC) -c -g $(INCS) $^
 clean:
 	-rm  *.o
 .PHONY: clean

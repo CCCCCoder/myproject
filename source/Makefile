@@ -4,6 +4,7 @@
 CUR_DIR = $(shell pwd)
 TOP_DIR = ../
 SUB_DIR := $(CUR_DIR)/test
+include $(TOP_DIR)/Makefile.define
 INCS += -I$(TOP_DIR)/include  #-I 增加include目录
 INCS += -I$(CUR_DIR)/include  #-I 增加include目录
 
@@ -18,10 +19,10 @@ $(TEST_LIB):$(OBJS)
 	@echo $^
 	@echo $(SUB_DIR)
 	cd $(SUB_DIR) && make clean all
-	cc -o $@ $(SUB_DIR)/*.o $^ ../lib/libbase.a -lpthread
+	$(CC) -o $@ $(SUB_DIR)/*.o $^ ../lib/libbase.a -lpthread
 	mv main ../bin/test
 %.o:%.c 
-	cc -c -g $(INCS)  $^
+	$(CC) -c -g $(INCS)  $^
 clean:
 	-rm $(TEST_LIB) *.o
 	cd $(SUB_DIR) &&make clean 
