@@ -31,8 +31,9 @@ int main()
 	//mytimer_Init();
 	pthread_create(&tid, NULL, test_thread, NULL);
 
-	while(1);
-	sleep(10);
+	for(;;){
+		sleep(10);
+	}
 	//pthread_cancel(tid);
 	//pthread_join(tid,NULL);
 }

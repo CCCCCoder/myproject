@@ -2,8 +2,9 @@
 #include "memory.h"
 #include "my_types.h"
 #include "stdlib.h"
+#include <string.h>
 
-U64 *my_alloc(U64 size)
+U64 *my_alloc(U64 size, const S8 *pDesc)
 {
 	MemHeader_t *pHeader  = NULL;
 	U64	         allocLen = 0;
@@ -27,6 +28,18 @@ U64 *my_alloc(U64 size)
 	pAddr =  (U64 *)pHeader->body;
 end:
     return pAddr;
+}
+
+U64 *my_zalloc(U64 size, const S8 *pDesc)
+{
+	U64 *pMem = NULL;
+	
+	pMem = my_alloc(size, pDesc);
+	if (NULL != pMem) {
+		memset(pMem, 0 ,sizeof(*pMem));
+	}
+	
+	return pMem;
 }
 
 void my_free(U64 *pAddr)

@@ -17,7 +17,7 @@ S32 taskSubmitToFifo(task_t *pTask)
     MY_BUG_ON(NULL == pSchedRes);
 
  	pthread_mutex_lock(pLock);
-	list_add_tail(&pTask->node,pTaskList);
+	list_add_tail(&pTask->header.node,pTaskList);
 	pthread_mutex_unlock(pLock);   
     return rc;
 }
@@ -26,15 +26,16 @@ task_t *taskCreat(void *pPrivData, TaskOps_t *pOps)
 {
     task_t *pTask = 0;
 
-    pTask = (task_t *)my_alloc(sizeof(*pTask));
+    pTask = (task_t *)my_zalloc(sizeof(*pTask), __FUNCTION__);
     if (NULL == pTask) {
         goto end;
     }
     memset((void *)pTask, 0, sizeof(*pTask));
     pTask->pPrevData = pPrivData;
-    pTask->pOps = pOps;
-    pTask->step = pOps->firstStep;
-    pTask->prevStep = pTask->step;
+    pTask->pTOps     = pOps;
+    pTask->step      = pOps->firstStep;
+    pTask->prevStep  = pTask->step;
+	pTask->header.type = TASK;
 
 end:
     return pTask;

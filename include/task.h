@@ -11,6 +11,7 @@ struct task;
 typedef SchedStatus_t (*schedTaskStepFunc)(struct task *pTask);
 typedef void (*schedTaskFinishCb)(struct task *pTask);
 
+///< 将prc的结构转换为TaskOps结构
 typedef struct TaskOps{
     U8 maxStep;
     U8 firstStep;
@@ -19,13 +20,24 @@ typedef struct TaskOps{
     schedTaskStepFunc func[16];
 }TaskOps_t;
 
-typedef struct task{
+typedef enum TaskType{
+	RPC = 0,
+	TASK,
+}TaskType_e;
+
+///< 用于调度的结构，挂链表调试等
+typedef struct SchedHeader{
     struct list_head node;
+	TaskType_e type;
     U32        traceId;
-    TaskOps_t *pOps;
-    void      *pPrevData;
-    U32        step;
-    U32        prevStep;
+}SchedHeader_t;
+
+typedef struct task{
+    SchedHeader_t header;
+	TaskOps_t    *pTOps;
+    void         *pPrevData;
+    U32           step;
+    U32           prevStep;
 }task_t;
 
 static inline void taskStepSet(task_t *pTask, U8 step)

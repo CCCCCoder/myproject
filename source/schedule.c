@@ -1,5 +1,6 @@
 #include "stdio.h"
 #include "task.h"
+#include "rpc.h"
 #include "schedule.h"
 #include <pthread.h>
 #include "mylist.h"
@@ -19,11 +20,11 @@ static SchedStatus_t runTaskStep(task_t *pTask)
 {
     SchedStatus_t status = SCHED_STATUS_PENDING;
 
-    MY_BUG_ON(pTask->step >= pTask->pOps->maxStep);
-    MY_BUG_ON(pTask->pOps->func[pTask->step] == NULL);
+    MY_BUG_ON(pTask->step >= pTask->pTOps->maxStep);
+    MY_BUG_ON(pTask->pTOps->func[pTask->step] == NULL);
     
-    if ((pTask->pOps->maxStep > pTask->step) && (pTask->pOps->func[pTask->step] != NULL)) {
-        status = pTask->pOps->func[pTask->step](pTask);
+    if ((pTask->pTOps->maxStep > pTask->step) && (pTask->pTOps->func[pTask->step] != NULL)) {
+        status = pTask->pTOps->func[pTask->step](pTask);
     } else {
         status = SCHED_STATUS_FINISH;
     }
@@ -35,8 +36,8 @@ static void taskFinish(task_t *pTask)
 {
     MY_BUG_ON(NULL == pTask);
     
-    if (pTask->pOps->finishFunc != NULL) {
-        pTask->pOps->finishFunc(pTask);
+    if (pTask->pTOps->finishFunc != NULL) {
+        pTask->pTOps->finishFunc(pTask);
     }
     taskDestroy(pTask);
     return;
@@ -53,6 +54,29 @@ static void runTask(task_t *pTask)
     if (SCHED_STATUS_FINISH == status) {
         taskFinish(pTask);
     }
+}
+
+static void runRpc(rpc_t *pRpc)
+{
+    MY_BUG_ON(pRpc->pRops->pFunCb == NULL);
+    
+	pRpc->pRops->pFunCb(pRpc->pPrevData);
+}
+
+static void run(task_t *pTask)
+{
+	if (TASK == pTask->header.type) {
+		runTask(pTask);
+	} else if (RPC == pTask->header.type) {
+		runRpc((rpc_t *)pTask);
+	} else {
+		MY_BUG();
+	}
+}
+
+task_t *node2TaskAddr(struct list_head *pTaskNode)
+{
+    return (task_t *)list_entry(pTaskNode, SchedHeader_t, node);
 }
 
 static void *thdSchedule(void *arg)
@@ -72,12 +96,12 @@ static void *thdSchedule(void *arg)
             list_for_each_safe(pTaskNode, pTmpList, pTaskList) {
                 list_del(pTaskNode);
                 pthread_mutex_unlock(pLock);
-                pTask = list_entry(pTaskNode, task_t, node);
+                pTask = node2TaskAddr(pTaskNode);//list_entry(pTaskNode, task_t, node);
                 
                 MY_BUG_ON(pTask == NULL);
+				
+				run(pTask);
 
-                runTask(pTask);
-                
                 pthread_mutex_lock(pLock);
             }
             pthread_mutex_unlock(pLock);
