@@ -46,6 +46,14 @@ static inline void taskStepSet(task_t *pTask, U8 step)
     pTask->step = step;
 }
 
+static inline void taskPrevDataSet(task_t *pTask, void *pData)
+{
+    pTask->pPrevData = pData;
+}
+static inline void *getTaskPrevData(task_t *pTask)
+{
+    return pTask->pPrevData;
+}
 task_t *taskCreat(void *pPrivData, TaskOps_t *pOps);
 void taskDestroy(task_t *pTask);
 S32 taskSubmitToFifo(task_t *pTask);

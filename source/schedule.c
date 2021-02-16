@@ -96,11 +96,11 @@ static void *thdSchedule(void *arg)
             list_for_each_safe(pTaskNode, pTmpList, pTaskList) {
                 list_del(pTaskNode);
                 pthread_mutex_unlock(pLock);
-                pTask = node2TaskAddr(pTaskNode);//list_entry(pTaskNode, task_t, node);
+                pTask = node2TaskAddr(pTaskNode);
                 
                 MY_BUG_ON(pTask == NULL);
-				
-				run(pTask);
+
+                run(pTask);
 
                 pthread_mutex_lock(pLock);
             }
