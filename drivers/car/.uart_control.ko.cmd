@@ -1,0 +1,1 @@
+cmd_/mnt/hgfs/share/myproject/drivers/car/uart_control.ko := ld -r -m elf_x86_64  -z max-page-size=0x200000  --build-id  -T ./scripts/module-common.lds -o /mnt/hgfs/share/myproject/drivers/car/uart_control.ko /mnt/hgfs/share/myproject/drivers/car/uart_control.o /mnt/hgfs/share/myproject/drivers/car/uart_control.mod.o;  true
