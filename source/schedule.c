@@ -81,6 +81,7 @@ task_t *node2TaskAddr(struct list_head *pTaskNode)
 
 static void *thdSchedule(void *arg)
 {
+    U8                needSched = 0;
     task_t           *pTask     = NULL;
     schedRes_t       *pSchedRes = schedResGet();
     pthread_mutex_t  *pLock     = &pSchedRes->taskLock;
@@ -88,33 +89,29 @@ static void *thdSchedule(void *arg)
     struct list_head *pTmpList  = NULL;
     struct list_head *pTaskNode = NULL;
 
-    printf("%s\n", __FUNCTION__);
-
     for (;;) {
-        if (!list_empty(pTaskList)) {
-            pthread_mutex_lock(pLock);
-            list_for_each_safe(pTaskNode, pTmpList, pTaskList) {
-                list_del(pTaskNode);
-                pthread_mutex_unlock(pLock);
-                pTask = node2TaskAddr(pTaskNode);
-                
-                MY_BUG_ON(pTask == NULL);
-
-                run(pTask);
-
-                pthread_mutex_lock(pLock);
-            }
+        needSched = 1;
+        pthread_mutex_lock(pLock);
+        while (!list_empty(pTaskList)) {
+            pTaskNode = del_item(pTaskList);
             pthread_mutex_unlock(pLock);
-        } else {
-            MY_LOG("schedule sleep 1\n");
-            test();
-            sleep(1);
+            pTask = node2TaskAddr(pTaskNode);
+
+            MY_BUG_ON(pTask == NULL);
+            needSched = 0;
+            run(pTask);
+            pthread_mutex_lock(pLock);
+        }
+        pthread_mutex_unlock(pLock);
+        if (1 == needSched) {
+            sleep(10);
         }
     }
 }
 
-S32 schedInit(void)
+S32 schedInit(U32 threadNum)
 {
+    U32 i  = 0;
     S32 rc = MY_SUCCESS;
     pthread_t tid;
     schedRes_t *pSchedRes = schedResGet();
@@ -124,11 +121,14 @@ S32 schedInit(void)
     if (rc != MY_SUCCESS) {
         MY_BUG();
     }
-
-    rc = pthread_create(&tid, NULL, thdSchedule, NULL);
-    if (rc != MY_SUCCESS) {
-        MY_BUG(); 
-    }    
+    
+    for (i = 0; i < threadNum; i++) {
+        rc = pthread_create(&tid, NULL, thdSchedule, NULL);
+        if (rc != MY_SUCCESS) {
+            MY_BUG(); 
+        }  
+    }
+  
     return rc;
 }
 

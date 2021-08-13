@@ -27,7 +27,7 @@ int main()
 	pthread_t tid;
 	U8 i;
 	libtest();
-	schedInit();
+	schedInit(10);
 	//mytimer_Init();
 	pthread_create(&tid, NULL, test_thread, NULL);
 

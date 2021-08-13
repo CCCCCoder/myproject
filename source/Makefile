@@ -15,8 +15,8 @@ OBJS = $(patsubst %.c,%.o,$(SOURCES)) #将.c替换未.o，.o未目标文件
 TEST_LIB = main
 all:$(TEST_LIB)
 $(TEST_LIB):$(OBJS)
-	@echo $@
-	@echo $^
+	@echo $@ #所有.o
+	@echo $^ #所有.c
 	@echo $(SUB_DIR)
 	cd $(SUB_DIR) && make clean all
 	$(CC) -o $@ $(SUB_DIR)/*.o $^ ../lib/libbase.a -lpthread
